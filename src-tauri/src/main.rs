@@ -1,18 +1,31 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+// Note: We don't use windows_subsystem = "windows" because we need console for CLI mode
+// The GUI will still work fine without it
 
+mod cli;
 mod commands;
 mod config;
 mod macro_engine;
 
 use macro_engine::MacroEngineState;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // Initialize tracing
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .init();
 
+    // Check if CLI mode is requested
+    if cli::is_cli_mode() {
+        // Run CLI mode
+        if let Err(e) = cli::run_cli().await {
+            eprintln!("Error: {}", e);
+            std::process::exit(1);
+        }
+        return;
+    }
+
+    // Run GUI mode
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(MacroEngineState::new())

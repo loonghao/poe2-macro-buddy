@@ -7,7 +7,12 @@
 
 [English Documentation](README.md)
 
-一个专为《流放之路2》(Path of Exile 2)设计的合规低频率键盘宏工具，提供 **CLI** 和 **GUI** 双界面，完全遵循游戏的宏使用规则。
+一个专为《流放之路2》(Path of Exile 2)设计的合规低频率键盘宏工具，单一可执行文件支持 **CLI** 和 **GUI** 双模式，完全遵循游戏的宏使用规则。
+
+## 使用模式
+
+- **GUI 模式**（默认）：`poe2-macro-buddy.exe` - 现代化 Tauri 界面，支持可视化键盘配置
+- **CLI 模式**：`poe2-macro-buddy.exe cli` - 轻量级命令行模式，适合高级用户
 
 ## 功能特性
 
@@ -48,10 +53,23 @@ cd poe2-macro-buddy
 # 构建项目
 cargo build --release
 
-# 可执行文件位于 target/release/poe2-macro-buddy
+# 可执行文件位于 src-tauri/target/release/poe2-macro-buddy
+# 默认启动 GUI，添加 cli 参数启动命令行模式
 ```
 
 ## 使用方法
+
+### CLI 模式
+
+要使用 CLI 模式，运行可执行文件时添加 `cli` 参数：
+
+```bash
+# Windows
+poe2-macro-buddy.exe cli
+
+# Linux/macOS
+./poe2-macro-buddy cli
+```
 
 ### 1. 配置
 
@@ -91,11 +109,12 @@ macros:
 ### 2. 运行
 
 ```bash
-# 运行宏工具
-cargo run --release
+# 以 CLI 模式运行
+cd src-tauri
+cargo run --release -- cli
 
-# 或运行编译好的二进制文件
-./target/release/poe2-macro-buddy
+# 或运行编译好的二进制文件（CLI 模式）
+./src-tauri/target/release/poe2-macro-buddy cli
 ```
 
 ### 3. 控制

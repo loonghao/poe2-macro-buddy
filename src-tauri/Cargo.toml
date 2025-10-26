@@ -1,10 +1,10 @@
 [package]
-name = "mouse-macro"
+name = "poe2-macro-buddy"
 version = "0.1.0"
-description = "A low-frequency keyboard macro tool for POE2 with GUI"
+description = "A compliant low-frequency keyboard macro tool for POE2 with GUI"
 authors = ["Hal <hal.long@outlook.com>"]
 license = "MIT"
-repository = ""
+repository = "https://github.com/loonghao/poe2-macro-buddy"
 edition = "2021"
 
 [build-dependencies]

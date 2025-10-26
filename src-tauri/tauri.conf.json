@@ -1,7 +1,7 @@
 {
-  "productName": "Mouse Macro",
+  "productName": "POE2 Macro Buddy",
   "version": "0.1.0",
-  "identifier": "com.mouse-macro.app",
+  "identifier": "com.poe2-macro-buddy.app",
   "build": {
     "beforeDevCommand": "npm --prefix ui run dev",
     "beforeBuildCommand": "npm --prefix ui run build",
@@ -11,7 +11,7 @@
   "app": {
     "windows": [
       {
-        "title": "Mouse Macro - Configuration",
+        "title": "POE2 Macro Buddy - Configuration",
         "width": 1200,
         "height": 800,
         "resizable": true,

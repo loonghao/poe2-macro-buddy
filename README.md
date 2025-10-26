@@ -7,7 +7,12 @@
 
 [中文文档](README_zh.md)
 
-A compliant low-frequency keyboard macro tool designed for Path of Exile 2, with both **CLI** and **GUI** interfaces, following the game's macro usage rules.
+A compliant low-frequency keyboard macro tool designed for Path of Exile 2, with both **CLI** and **GUI** modes in a single executable, following the game's macro usage rules.
+
+## Usage Modes
+
+- **GUI Mode** (default): `poe2-macro-buddy.exe` - Modern Tauri-based interface with visual keyboard configuration
+- **CLI Mode**: `poe2-macro-buddy.exe cli` - Lightweight command-line mode for advanced users
 
 ## Features
 
@@ -105,8 +110,8 @@ If you prefer not to use `just`, we also provide:
 All methods support the same commands (install, dev, build, test, etc.).
 
 **Output Locations:**
-- CLI: `target/release/poe2-macro-buddy` (or `.exe` on Windows)
-- GUI: `src-tauri/target/release/bundle/`
+- **Executable**: `src-tauri/target/release/poe2-macro-buddy` (or `.exe` on Windows)
+- **Installers**: `src-tauri/target/release/bundle/`
   - Windows: `.msi` installer
   - Linux: `.deb`, `.AppImage`
   - macOS: `.dmg`
@@ -120,7 +125,7 @@ All methods support the same commands (install, dev, build, test, etc.).
    # Development
    cd ui && npm run tauri dev
 
-   # Or run the built executable
+   # Or run the built GUI executable
    ./src-tauri/target/release/poe2-macro-buddy
    ```
 
@@ -138,6 +143,16 @@ All methods support the same commands (install, dev, build, test, etc.).
    - Click "Stop Engine" when done
 
 ### CLI Mode
+
+To use CLI mode, run the executable with the `cli` argument:
+
+```bash
+# Windows
+poe2-macro-buddy.exe cli
+
+# Linux/macOS
+./poe2-macro-buddy cli
+```
 
 ### 1. Configure
 
@@ -177,11 +192,12 @@ macros:
 ### 2. Run
 
 ```bash
-# Run the macro tool
-cargo run --release
+# Run in CLI mode
+cd src-tauri
+cargo run --release -- cli
 
-# Or run the compiled binary
-./target/release/poe2-macro-buddy
+# Or run the compiled binary in CLI mode
+./src-tauri/target/release/poe2-macro-buddy cli
 ```
 
 ### 3. Control

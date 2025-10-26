@@ -328,3 +328,51 @@ impl MacroEngineState {
         Duration::from_millis(actual_ms)
     }
 }
+
+/// Simple macro engine for CLI mode
+pub struct MacroEngine {
+    config: Config,
+}
+
+impl MacroEngine {
+    pub fn new(config: Config) -> Self {
+        Self { config }
+    }
+
+    pub async fn run(&mut self) -> Result<()> {
+        info!(
+            "Starting POE2 Macro Engine with {} macro(s)...",
+            self.config.macros.len()
+        );
+        info!("TIP: On laptops, you may need to press Fn+F# to toggle");
+
+        if self.config.macros.is_empty() {
+            return Err(anyhow::anyhow!("No macros configured"));
+        }
+
+        // Spawn a task for each macro
+        let mut handles = vec![];
+        let running = Arc::new(AtomicBool::new(true));
+
+        for (idx, macro_config) in self.config.macros.iter().enumerate() {
+            let macro_config = macro_config.clone();
+            let enabled = Arc::new(AtomicBool::new(macro_config.enabled_by_default));
+            let running_clone = running.clone();
+
+            let handle = tokio::spawn(async move {
+                if let Err(e) = MacroEngineState::run_single_macro(idx, macro_config, enabled, running_clone).await {
+                    warn!("Macro {} error: {}", idx, e);
+                }
+            });
+
+            handles.push(handle);
+        }
+
+        // Wait for all macros (they run forever)
+        for handle in handles {
+            let _ = handle.await;
+        }
+
+        Ok(())
+    }
+}
