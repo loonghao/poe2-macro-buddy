@@ -8,6 +8,7 @@ mod macro_engine;
 
 use commands::ConfigCache;
 use macro_engine::MacroEngineState;
+use tauri::Manager;
 
 #[tokio::main]
 async fn main() {
@@ -31,6 +32,19 @@ async fn main() {
         .plugin(tauri_plugin_shell::init())
         .manage(MacroEngineState::new())
         .manage(ConfigCache::new())
+        .setup(|app| {
+            // Get the main window
+            let window = app.get_webview_window("main").unwrap();
+
+            // Show window after a short delay to ensure content is loaded
+            let window_clone = window.clone();
+            tauri::async_runtime::spawn(async move {
+                tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                window_clone.show().unwrap();
+            });
+
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             commands::load_config,
             commands::save_config,
