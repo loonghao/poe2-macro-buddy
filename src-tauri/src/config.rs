@@ -4,17 +4,12 @@ use std::fs;
 use std::path::Path;
 
 /// Type of action for a macro
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ActionType {
+    #[default]
     Keyboard,
     Mouse,
-}
-
-impl Default for ActionType {
-    fn default() -> Self {
-        ActionType::Keyboard
-    }
 }
 
 /// Mouse button type
@@ -153,10 +148,11 @@ impl Config {
         // Check for duplicate keys (only for keyboard macros)
         let mut keys = std::collections::HashSet::new();
         for macro_config in &self.macros {
-            if macro_config.action_type == ActionType::Keyboard && !macro_config.key.is_empty() {
-                if !keys.insert(&macro_config.key) {
-                    return Err(anyhow::anyhow!("Duplicate key: {}", macro_config.key));
-                }
+            if macro_config.action_type == ActionType::Keyboard
+                && !macro_config.key.is_empty()
+                && !keys.insert(&macro_config.key)
+            {
+                return Err(anyhow::anyhow!("Duplicate key: {}", macro_config.key));
             }
         }
 

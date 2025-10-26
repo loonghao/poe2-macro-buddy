@@ -6,6 +6,7 @@ mod commands;
 mod config;
 mod macro_engine;
 
+use commands::ConfigCache;
 use macro_engine::MacroEngineState;
 
 #[tokio::main]
@@ -29,6 +30,7 @@ async fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(MacroEngineState::new())
+        .manage(ConfigCache::new())
         .invoke_handler(tauri::generate_handler![
             commands::load_config,
             commands::save_config,

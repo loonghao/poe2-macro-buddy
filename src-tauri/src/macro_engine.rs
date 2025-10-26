@@ -84,10 +84,6 @@ impl MacroEngineState {
         info!("Macro engine stopped");
     }
 
-    pub fn is_running(&self) -> bool {
-        self.running.load(Ordering::Relaxed)
-    }
-
     pub async fn get_status(&self) -> Vec<MacroStatus> {
         let config_guard = self.config.read().await;
         let states_guard = self.macro_states.read().await;
@@ -193,7 +189,8 @@ impl MacroEngineState {
 
         tokio::spawn(async move {
             let mut last_toggle_state = false;
-            let mut check_interval = time::interval(Duration::from_millis(50));
+            // Optimized: Increase interval to reduce CPU usage (100ms is still responsive)
+            let mut check_interval = time::interval(Duration::from_millis(100));
 
             while running_clone.load(Ordering::Relaxed) {
                 check_interval.tick().await;
@@ -228,6 +225,14 @@ impl MacroEngineState {
         // Main action loop (keyboard or mouse)
         let mut enigo = Enigo::new(&Settings::default())?;
 
+        // Pre-compute button name for logging (optimization)
+        let button_name = match macro_config.mouse_button {
+            Some(MouseButton::Left) => "Left",
+            Some(MouseButton::Right) => "Right",
+            Some(MouseButton::Middle) => "Middle",
+            None => "Unknown",
+        };
+
         while running.load(Ordering::Relaxed) {
             let interval =
                 Self::calculate_interval(macro_config.interval_ms, macro_config.random_variance_ms);
@@ -257,12 +262,6 @@ impl MacroEngineState {
                         if let Some(button) = target_mouse_button {
                             match enigo.button(button, enigo::Direction::Click) {
                                 Ok(_) => {
-                                    let button_name = match macro_config.mouse_button {
-                                        Some(MouseButton::Left) => "Left",
-                                        Some(MouseButton::Right) => "Right",
-                                        Some(MouseButton::Middle) => "Middle",
-                                        None => "Unknown",
-                                    };
                                     tracing::debug!(
                                         "Macro #{}: Clicked mouse button '{}' (next in ~{}ms)",
                                         idx,
@@ -360,7 +359,10 @@ impl MacroEngine {
             let running_clone = running.clone();
 
             let handle = tokio::spawn(async move {
-                if let Err(e) = MacroEngineState::run_single_macro(idx, macro_config, enabled, running_clone).await {
+                if let Err(e) =
+                    MacroEngineState::run_single_macro(idx, macro_config, enabled, running_clone)
+                        .await
+                {
                     warn!("Macro {} error: {}", idx, e);
                 }
             });

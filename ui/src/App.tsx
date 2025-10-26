@@ -2,32 +2,38 @@ import { useEffect, useState } from "react";
 import { Config, loadConfig, saveConfig, startMacroEngine, stopMacroEngine, validateConfig } from "@/lib/tauri";
 import { MacroConfig } from "@/components/MacroConfig";
 import { StatusMonitor } from "@/components/StatusMonitor";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { Play, Pause, Save, FolderOpen, Settings, Activity } from "lucide-react";
+import { Play, Pause, Save, FolderOpen, Settings, Activity, Loader2 } from "lucide-react";
 
 function App() {
   const [config, setConfig] = useState<Config>({ macros: [] });
   const [isRunning, setIsRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    loadConfiguration();
+    loadConfiguration(true);
   }, []);
 
-  const loadConfiguration = async () => {
+  const loadConfiguration = async (isInitial = false) => {
     try {
       setIsLoading(true);
       const loadedConfig = await loadConfig();
       setConfig(loadedConfig);
-      toast({
-        title: "Configuration Loaded",
-        description: `Loaded ${loadedConfig.macros.length} macro(s)`,
-      });
+
+      // Only show toast for manual reloads, not initial load
+      if (!isInitial) {
+        toast({
+          title: "Configuration Loaded",
+          description: `Loaded ${loadedConfig.macros.length} macro(s)`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -36,6 +42,9 @@ function App() {
       });
     } finally {
       setIsLoading(false);
+      if (isInitial) {
+        setIsInitializing(false);
+      }
     }
   };
 
@@ -120,6 +129,11 @@ function App() {
     }
   };
 
+  // Show loading screen during initialization
+  if (isInitializing) {
+    return <LoadingScreen message="Initializing Mouse Macro..." />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-6 max-w-7xl">
@@ -147,7 +161,12 @@ function App() {
                 variant={isRunning ? "destructive" : "default"}
                 size="lg"
               >
-                {isRunning ? (
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isRunning ? "Stopping..." : "Starting..."}
+                  </>
+                ) : isRunning ? (
                   <>
                     <Pause className="mr-2 h-4 w-4" />
                     Stop Engine
@@ -165,17 +184,35 @@ function App() {
                 variant="outline"
                 size="lg"
               >
-                <Save className="mr-2 h-4 w-4" />
-                Save Configuration
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Configuration
+                  </>
+                )}
               </Button>
               <Button
-                onClick={loadConfiguration}
+                onClick={() => loadConfiguration(false)}
                 disabled={isLoading || isRunning}
                 variant="outline"
                 size="lg"
               >
-                <FolderOpen className="mr-2 h-4 w-4" />
-                Reload Configuration
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <FolderOpen className="mr-2 h-4 w-4" />
+                    Reload Configuration
+                  </>
+                )}
               </Button>
             </div>
             {config.macros.length === 0 && (

@@ -28,4 +28,3 @@ pub fn is_cli_mode() -> bool {
     let args: Vec<String> = env::args().collect();
     args.len() > 1 && args[1].to_lowercase() == "cli"
 }
-
