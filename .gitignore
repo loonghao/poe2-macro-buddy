@@ -1,0 +1,46 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# Tauri
+/src-tauri/target/
+
+# Node
+/node_modules/
+/package-lock.json
+/ui/node_modules/
+/ui/dist/
+/ui/.vite/
+/ui/package-lock.json
+/ui/yarn.lock
+/ui/pnpm-lock.yaml
+
+# Configuration
+config.yaml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+target/
+ui/node_modules/
+ui/dist/
+ui/.vite/
+ui/package-lock.json
+ui/yarn.lock
+ui/pnpm-lock.yaml

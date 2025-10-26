@@ -1,0 +1,39 @@
+# POE2 Macro Configuration Example
+# Copy this file to config.yaml and modify as needed
+
+# List of macros - you can have multiple keys with different settings
+macros:
+  # Macro 1: Press "1" key
+  - key: "1"
+    interval_ms: 1000           # Base interval: 1 second
+    random_variance_ms: 200     # Random ±200ms (actual: 800-1200ms)
+    toggle_hotkey: "F9"         # Press F9 (or Fn+F9 on laptops) to toggle
+    enabled_by_default: false   # Start disabled
+
+  # Macro 2: Press "e" key
+  - key: "e"
+    interval_ms: 1500           # Base interval: 1.5 seconds
+    random_variance_ms: 300     # Random ±300ms (actual: 1200-1800ms)
+    toggle_hotkey: "F10"        # Press F10 to toggle
+    enabled_by_default: false
+
+  # Macro 3: Press "2" key
+  - key: "2"
+    interval_ms: 2000           # Base interval: 2 seconds
+    random_variance_ms: 400     # Random ±400ms (actual: 1600-2400ms)
+    toggle_hotkey: "F11"        # Press F11 to toggle
+    enabled_by_default: false
+
+# Supported keys: "1", "2", "3", "4", "5", "q", "w", "e", "r", "t"
+# Supported hotkeys: F1-F12
+#
+# Why random variance?
+# - Avoids fixed patterns that could be detected
+# - Makes the macro behavior more human-like
+# - Better compliance with POE2 anti-cheat
+#
+# Tips:
+# - Each macro runs independently
+# - You can enable/disable each macro separately
+# - On laptops, use Fn+F# to toggle (e.g., Fn+F9)
+
