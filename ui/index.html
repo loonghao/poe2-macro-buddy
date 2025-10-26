@@ -5,9 +5,67 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mouse Macro - Configuration</title>
+    <style>
+      /* Initial loading screen styles - will be replaced when React loads */
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: hsl(0 0% 100%);
+        z-index: 9999;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #initial-loader {
+          background-color: hsl(222.2 84% 4.9%);
+        }
+        #initial-loader .loader-text {
+          color: hsl(210 40% 96.1%);
+        }
+      }
+
+      .loader-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid hsl(215.4 16.3% 46.9%);
+        border-top-color: hsl(222.2 47.4% 11.2%);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .loader-spinner {
+          border-color: hsl(217.2 32.6% 17.5%);
+          border-top-color: hsl(210 40% 98%);
+        }
+      }
+
+      .loader-text {
+        margin-top: 1rem;
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: hsl(215.4 16.3% 46.9%);
+        font-family: system-ui, -apple-system, sans-serif;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading screen - will be replaced by React -->
+      <div id="initial-loader">
+        <div class="loader-spinner"></div>
+        <p class="loader-text">Initializing Mouse Macro...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
