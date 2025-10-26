@@ -24,6 +24,9 @@ A compliant low-frequency keyboard macro tool designed for Path of Exile 2, with
 - 🎮 **Independent Control**: Each key has its own toggle hotkey (F9, F10, F11, etc.)
 - ⚙️ **Visual Configuration**: Interactive keyboard layout for easy setup (GUI mode)
 - 📊 **Real-time Monitoring**: Live status display and control (GUI mode)
+- 🔥 **Hot Reload**: Configuration changes are automatically detected and applied
+- 💾 **Auto-save**: Configuration changes are automatically saved (1-second debounce)
+- 🔒 **Runtime Protection**: Configuration editing is disabled while engine is running
 - 🔒 **Safe**: No game memory manipulation, only simulates key presses
 
 ## POE2 Macro Rules
@@ -131,16 +134,25 @@ All methods support the same commands (install, dev, build, test, etc.).
 
 2. **Configure Macros**
    - Click "Add New Macro" to create a macro
-   - Click on the visual keyboard to select target key
+   - Select action type: Keyboard or Mouse
+   - For Keyboard: Click on the visual keyboard to select target key
+   - For Mouse: Click on the mouse diagram to select button (left/right/middle)
    - Click on function keys (F1-F12) to set hotkey
    - Adjust interval and variance with sliders
-   - Save configuration
+   - Configuration is **automatically saved** after 1 second of inactivity
+   - **Note**: Configuration editing is disabled while engine is running
 
 3. **Run Macros**
    - Click "Start Engine" to begin
    - Use hotkeys (F9, F10, etc.) to toggle individual macros
    - Monitor status in real-time
    - Click "Stop Engine" when done
+
+4. **Configuration Hot Reload**
+   - Any changes to `config.yaml` are automatically detected
+   - Configuration is reloaded without restarting the application
+   - Frontend UI updates automatically to reflect changes
+   - A toast notification appears when configuration is reloaded
 
 ### CLI Mode
 
@@ -216,8 +228,10 @@ Each macro supports the following options:
 
 | Option | Type | Example | Description |
 |--------|------|---------|-------------|
-| `key` | string | "1" | Key to press (1-5, q, w, e, r, t) |
-| `interval_ms` | number | 1000 | Base interval between key presses (milliseconds) |
+| `action_type` | string | "keyboard" | Action type: "keyboard" or "mouse" |
+| `key` | string | "1" | Key to press (for keyboard actions) |
+| `mouse_button` | string | "left" | Mouse button: "left", "right", or "middle" (for mouse actions) |
+| `interval_ms` | number | 1000 | Base interval between actions (milliseconds) |
 | `random_variance_ms` | number | 200 | Random variance (±milliseconds), 0 for no randomness |
 | `toggle_hotkey` | string | "F9" | Hotkey to toggle this macro (F1-F12) |
 | `enabled_by_default` | boolean | false | Whether this macro starts enabled |
@@ -227,11 +241,27 @@ Each macro supports the following options:
 - `interval_ms: 1500, random_variance_ms: 300` → Actual: 1200-1800ms
 - `interval_ms: 2000, random_variance_ms: 0` → Actual: Fixed 2000ms
 
-## Supported Keys
+**Configuration Hot Reload:**
+- Changes to `config.yaml` are automatically detected (500ms debounce)
+- Configuration is reloaded without restarting the application
+- Running macros are automatically restarted with new settings
+- GUI auto-saves changes after 1 second of inactivity
 
-### Target Keys
-- Number keys: `1`, `2`, `3`, `4`, `5`
-- Letter keys: `q`, `w`, `e`, `r`, `t`
+## Supported Keys and Actions
+
+### Action Types
+- **Keyboard**: Simulates keyboard key presses
+- **Mouse**: Simulates mouse button clicks
+
+### Target Keys (Keyboard Actions)
+- Number keys: `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `0`
+- Letter keys: `q`, `w`, `e`, `r`, `t`, `y`, `u`, `i`, `o`, `p`, `a`, `s`, `d`, `f`, `g`, `h`, `j`, `k`, `l`, `z`, `x`, `c`, `v`, `b`, `n`, `m`
+- Function keys: `F1` through `F12`
+
+### Mouse Buttons (Mouse Actions)
+- `left`: Left mouse button
+- `right`: Right mouse button
+- `middle`: Middle mouse button (scroll wheel click)
 
 ### Toggle Hotkeys
 - Function keys: `F1` through `F12`
@@ -265,23 +295,41 @@ poe2-macro-buddy/
 
 ### Dependencies
 
+**Backend (Rust):**
 - `enigo` - Cross-platform input simulation
 - `device_query` - Keyboard state detection
 - `tokio` - Async runtime
 - `serde` - Serialization
 - `serde_yaml` - YAML configuration
 - `tracing` - Logging
+- `notify` - File system event monitoring for hot reload
+- `tauri` - Desktop application framework
+
+**Frontend (TypeScript/React):**
+- `react` - UI framework
+- `vite` - Build tool and dev server
+- `shadcn/ui` - UI component library
+- `tailwindcss` - Utility-first CSS framework
 
 ## FAQ
 
 **Q: F9 hotkey not working on my laptop?**
 A: Most laptops require pressing `Fn + F9` to trigger function keys.
 
-**Q: Can I use other keys besides 1-5 and Q-T?**
-A: Currently only these keys are supported to comply with POE2 rules. You can modify the code to add more keys.
+**Q: Can I use other keys besides the supported ones?**
+A: The GUI supports all alphanumeric keys (0-9, a-z) and function keys (F1-F12). You can also configure mouse button clicks.
 
 **Q: Is this safe to use?**
-A: This tool only simulates keyboard input and doesn't modify game memory. However, use at your own risk and always follow POE2's Terms of Service.
+A: This tool only simulates keyboard/mouse input and doesn't modify game memory. However, use at your own risk and always follow POE2's Terms of Service.
+
+**Q: Do I need to manually save configuration changes?**
+A: No! In GUI mode, configuration changes are automatically saved after 1 second of inactivity. You can also edit `config.yaml` directly, and changes will be automatically detected and applied.
+
+**Q: Can I edit configuration while the engine is running?**
+A: No, configuration editing is disabled while the engine is running to prevent runtime errors. Stop the engine first to make changes.
+
+**Q: How does hot reload work?**
+A: The application monitors `config.yaml` for changes using a file watcher. When changes are detected (with 500ms debounce), the configuration is automatically reloaded and running macros are restarted with new settings.
 
 ## Contributing
 
